@@ -1,0 +1,23 @@
+{
+  "name": "google-email-scraper",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "dev": "nodemon src/main.js",
+    "playwright:install": "playwright install"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.56.0",
+    "@supabase/supabase-js": "^2.75.0",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2",
+    "nopecha": "^1.0.11",
+    "playwright": "^1.56.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
