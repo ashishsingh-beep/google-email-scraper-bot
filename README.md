@@ -24,8 +24,8 @@ npm run playwright:install
 - Optionally set high concurrency:
   - `BROWSERS` (windows), `TABS_PER_BROWSER` (tabs per window). Example: 10 × 100.
 - Provide `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE` (preferred) or `SUPABASE_KEY`/`SUPABASE_ANON_KEY`.
-- Optional: set `NOPECHA_API_KEY` (and optionally `NOPECHA_ENDPOINT`) to attempt automatic CAPTCHA solving via API.
-- Optional: set `NOPECHA_EXTENSION_PATH` to load the NopeCHA browser extension.
+- Optional: set `NOPECHA_KEY` (official) or `NOPECHA_API_KEY` to enable NopeCHA automatic CAPTCHA solving via API.
+- Optional: set `NOPECHA_EXTENSION_PATH` to load the NopeCHA browser extension (Chromium only; requires headless=false and extension path).
 
 3. Prepare CSV input:
 - Edit `src/input.csv` with a header `query` and one query per row.
@@ -65,8 +65,21 @@ npm run dev
 Results append to `output.csv` with columns: `email,query,timestamp`.
 CAPTCHA handling tries consent auto-accept, then NopeCHA API token solving; if unavailable, it proceeds without waiting.
 
+### NopeCHA quick check (official client)
+
+On start, the scraper will call NopeCHA's official client to print your balance. Make sure `.env` contains a valid `NOPECHA_KEY` from the NopeCHA dashboard. If you see a value starting with `sub_...`, that's a Stripe subscription id and won't work as an API key.
+
+If you want to verify your key manually with a one-off Node snippet:
+
+```js
+import { Configuration, NopeCHAApi } from 'nopecha';
+const nopecha = new NopeCHAApi(new Configuration({ apiKey: process.env.NOPECHA_KEY }));
+const balance = await nopecha.getBalance();
+console.log(balance);
+```
+
 ## Notes
 - The scraper uses several selectors to find the “Next” button (e.g., `a#pnnext`, `a[aria-label="Next page"]`).
-- Basic CAPTCHA/consent detection attempts to accept consent banners and falls back to a 60s manual wait. If Noptcha is configured, it attempts to solve reCAPTCHA automatically.
+- Basic CAPTCHA/consent detection attempts to accept consent banners. If NopeCHA is configured, it requests a token via the official `/token` API and injects it automatically.
 - Email extraction uses a simple regex and filters obvious false positives. Tweak in `src/main.js` if needed.
 - Concurrency can increase throughput but also blocking risk; start low and increase gradually.
